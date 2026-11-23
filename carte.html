@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Carte des itinéraires – AdriXplore</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Carte interactive de tous les itinéraires de rando et de trail AdriXplore autour de Montpellier.">
+<meta property="og:title" content="Carte des itinéraires">
+<meta property="og:description" content="Carte interactive de tous les itinéraires de rando et de trail AdriXplore autour de Montpellier.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="AdriXplore">
+<link rel="icon" href="assets/favicon.png">
+<link rel="apple-touch-icon" href="assets/logo-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="assets/style.css">
+<link rel="stylesheet" href="assets/leaflet/leaflet.css"><script src="assets/leaflet/leaflet.js" defer></script>
+</head>
+<body>
+<a class="skip" href="#contenu">Aller au contenu</a>
+<header class="site-header"><div class="wrap">
+  <a class="brand" href="accueil.html"><img src="assets/logo-96.png" alt="" width="44" height="44"><span>adri<b>X</b>plore</span></a>
+  <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav">Menu</button>
+  <nav class="nav" id="nav" aria-label="Navigation principale"><a href="accueil.html">Accueil</a><a href="itineraires.html">Itinéraires</a><a href="carte.html" aria-current="page">Carte</a><a href="treks.html">Treks</a><a href="trail.html">Trail</a><a href="voyages.html">Voyages</a><a href="outils.html">Outils</a><a href="a-propos.html">À propos</a><a href="contact.html">Contact</a></nav>
+</div></header>
+<main id="contenu">
+<div class="hero page-hero"><canvas class="topo" aria-hidden="true"></canvas><div class="wrap"><div class="eyebrow">Toutes mes traces</div><h1>La carte des itinéraires</h1><p class="lead">Montpellier, Marseille, Pyrénées, Lozère : repérez les itinéraires, filtrez par difficulté et ouvrez la fiche complète en un clic.</p></div></div><section class="block"><div class="wrap"><div class="sec-head"><div><h2>Mes traces</h2><p>22 traces enregistrées sur le terrain. Choisissez une région, puis cliquez sur une trace.</p></div><div class="chips" role="group" aria-label="Filtrer par difficulté"><button class="chip" type="button" data-f="" aria-pressed="true">Tous</button><button class="chip" type="button" data-f="facile" aria-pressed="false">Facile</button><button class="chip" type="button" data-f="moyenne" aria-pressed="false">Moyenne</button><button class="chip" type="button" data-f="soutenue" aria-pressed="false">Soutenue</button></div></div><div class="chips" role="group" aria-label="Choisir la région" style="margin-bottom:12px"><button class="chip" type="button" data-r="montpellier" aria-pressed="true">Montpellier et alentours</button><button class="chip" type="button" data-r="marseille" aria-pressed="false">Marseille</button><button class="chip" type="button" data-r="pyrenees" aria-pressed="false">Pyrénées</button><button class="chip" type="button" data-r="lozere" aria-pressed="false">Lozère</button></div><div class="mapbox" id="bigmap"></div><p class="note" id="map-note">Survolez une trace pour voir son nom, cliquez pour ouvrir la fiche.</p></div></section>
+</main>
+<footer class="site-footer">
+  <div class="wrap">
+    <div><div class="foot-brand"><img src="assets/logo-96.png" alt="" width="52" height="52"><b style="font:700 24px var(--f-display)">AdriXplore</b></div>
+      <p>Explorer pour vivre, vivre pour explorer. Treks, itinéraires de rando et de trail, voyages : mes aventures et mes conseils pour préparer les vôtres.</p></div>
+    <div><h3>Me suivre</h3><ul>
+      <li><a href="https://www.instagram.com/adrixplore/" target="_blank" rel="noopener">Instagram · @adrixplore</a></li>
+      <li><a href="https://www.tiktok.com/@adri.xplore" target="_blank" rel="noopener">TikTok · @adri.xplore</a></li>
+      <li><a href="https://www.youtube.com/@adri.xplore" target="_blank" rel="noopener">YouTube · @adri.xplore</a></li></ul></div>
+    <div><h3>Infos</h3><ul>
+      <li><a href="a-propos.html">À propos</a></li><li><a href="contact.html">Contact</a></li>
+      <li><a href="outils.html">Mes outils</a></li><li><a href="mentions-legales.html">Mentions légales</a></li></ul></div>
+  </div>
+  <div class="copy"><div class="wrap"><span>© 2026 AdriXplore · Adrien Ruault</span><span>Textes et photos : tous droits réservés</span></div></div>
+</footer>
+<script src="assets/site.js" defer></script>
+</body>
+</html>
