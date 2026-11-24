@@ -82,7 +82,11 @@ fetch('assets/routes.json').then(r=>r.json()).then(async R=>{
       const m=L.map(bm,{scrollWheelZoom:false,dragging:!L.Browser.mobile,zoomSnap:0.25}); tileLayer().addTo(m);
       const ls=rr.map(r=>{const l=L.polyline(r.p.map(p=>[p[0],p[1]]),{color:col(r),weight:4}).addTo(m)
         .bindPopup(`<b>${r.t}</b><br>${km(r.km)} km · ${nf(r.dp)} m D+<br><a href="${r.page}.html">Voir la fiche →</a>`);
-        l.on('mouseover',()=>l.setStyle({weight:7})).on('mouseout',()=>l.setStyle({weight:4})); return l});
+        l.on('mouseover',()=>l.setStyle({weight:7})).on('mouseout',()=>l.setStyle({weight:4}));
+        L.circleMarker([r.p[0][0],r.p[0][1]],{radius:8,color:'#fff',weight:2,fillColor:col(r),fillOpacity:1}).addTo(m)
+          .bindTooltip(r.card_t||r.t,{direction:'top',offset:[0,-6]})
+          .bindPopup(`<b>${r.t}</b><br>${km(r.km)} km · ${nf(r.dp)} m D+<br><a href="${r.page}.html">Voir la fiche →</a>`);
+        return l});
       const bb=L.featureGroup(ls).getBounds(), fit=()=>{m.invalidateSize();m.fitBounds(bb,{padding:[24,24]})};
       fit(); setTimeout(fit,300); window.addEventListener('load',fit);
       return;
