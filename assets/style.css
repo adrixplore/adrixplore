@@ -269,4 +269,4 @@ textarea{min-height:150px;resize:vertical}
 .duo{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px}
 @media (max-width:760px){.duo{grid-template-columns:1fr}}
 .wide-card.photo .ph{aspect-ratio:16/10}
-.leaflet-attribution-flag{display:none!important}
+.leaflet-container .leaflet-control-attribution .leaflet-attribution-flag{display:none!important}

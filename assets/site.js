@@ -83,7 +83,8 @@ fetch('assets/routes.json').then(r=>r.json()).then(async R=>{
       const ls=rr.map(r=>{const l=L.polyline(r.p.map(p=>[p[0],p[1]]),{color:col(r),weight:4}).addTo(m)
         .bindPopup(`<b>${r.t}</b><br>${km(r.km)} km · ${nf(r.dp)} m D+<br><a href="${r.page}.html">Voir la fiche →</a>`);
         l.on('mouseover',()=>l.setStyle({weight:7})).on('mouseout',()=>l.setStyle({weight:4})); return l});
-      m.fitBounds(L.featureGroup(ls).getBounds(),{padding:[24,24]});
+      const bb=L.featureGroup(ls).getBounds(), fit=()=>{m.invalidateSize();m.fitBounds(bb,{padding:[24,24]})};
+      fit(); setTimeout(fit,300); window.addEventListener('load',fit);
       return;
     }
     const W=1100,H=region==='montpellier'?620:520, all=rr.flatMap(r=>r.p), towns=TOWNS[region]||[];
