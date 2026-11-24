@@ -34,7 +34,7 @@ if(form) form.addEventListener('submit',e=>{
 });
 
 /* ---------- données des itinéraires ---------- */
-const needData=$('.route-viz,#bigmap,.mini[data-route],#home-stats');
+const needData=$('.route-viz,.region-map,.mini[data-route]');
 if(!needData) return;
 
 let tilesPromise;
@@ -65,58 +65,41 @@ fetch('assets/routes.json').then(r=>r.json()).then(async R=>{
   const byId=Object.fromEntries(R.map(r=>[r.id,r]));
   const ok=await tilesOK();
 
-  /* stats accueil */
-  const hs=$('#home-stats');
-  if(hs){const u=[...new Map(R.map(r=>[r.id,r])).values()];
-    hs.innerHTML=`<div class="stat"><b>${u.length}</b><span>itinéraires tracés</span></div><div class="stat"><b>${Math.round(u.reduce((a,r)=>a+r.km,0))} km</b><span>de sentiers</span></div><div class="stat"><b>${nf(u.reduce((a,r)=>a+r.dp,0))} m</b><span>de dénivelé +</span></div>`}
-
   /* mini-traces des cartes */
   $$('.mini[data-route]').forEach(el=>{const r=byId[el.dataset.route]; if(!r) return; const f=proj(r.p,300,150,16);
     el.innerHTML=`<svg viewBox="0 0 300 150" aria-hidden="true"><path d="${pathD(r.p,f)}" fill="none" stroke="var(--forest)" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/><circle cx="${f(r.p[0])[0]}" cy="${f(r.p[0])[1]}" r="5" fill="var(--sun)"/></svg>`});
 
-  /* grande carte */
-  const bm=$('#bigmap');
-  if(bm){
-    let current='', region=bm.dataset.region||'montpellier';
-    const chips=$$('.chip[data-f]'), rchips=$$('.chip[data-r]');
-    const TOWNS={montpellier:[['Montpellier',43.611,3.877],['Saint-Mathieu-de-Tréviers',43.768,3.858],['Clermont-l’Hérault',43.627,3.432],['Frontignan',43.448,3.756],['Ganges',43.934,3.708]],
-      marseille:[['Marseille',43.296,5.37],['Cassis',43.214,5.538]],pyrenees:[['Bagnères-de-Luchon',42.79,0.594]],
-      lozere:[['Mende',44.518,3.5],['La Canourgue',44.431,3.215],['Florac',44.324,3.593],['Meyrueis',44.18,3.43]]};
-    const inRegion=()=>R.filter(r=>(r.region||'montpellier')===region);
-    const svgMap=()=>{
-      const W=1100,H=680, rr=inRegion(), all=rr.flatMap(r=>r.p);
-      const towns=TOWNS[region]||[];
-      const f=proj(all.concat(towns.map(t=>[t[1],t[2]])),W,H,48);
-      const shown=rr.filter(r=>!current||r.diff===current);
-      let s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Carte des itinéraires">`;
-      const c=f(towns.length?[towns[0][1],towns[0][2]]:all[0]);
-      for(let i=1;i<14;i++) s+=`<circle cx="${c[0]}" cy="${c[1]}" r="${i*48}" fill="none" stroke="var(--contour)"/>`;
-      if(region==='montpellier'){const sea=f([43.44,3.86]); s+=`<text x="${sea[0]}" y="${sea[1]+22}" fill="var(--muted)" font-family="var(--f-display)" font-size="20" letter-spacing="6" opacity=".7">MÉDITERRANÉE</text>`;}
-      towns.forEach((t,i)=>{const [x,y]=f([t[1],t[2]]),m=i===0;s+=`<circle cx="${x}" cy="${y}" r="${m?6:3.5}" fill="var(--ink)"/><text x="${x+8}" y="${y+4}" font-size="${m?17:13}" font-weight="${m?600:400}" fill="var(--muted)">${t[0]}</text>`});
-      shown.forEach(r=>{const d=pathD(r.p,f);s+=`<a href="${r.page}.html" data-id="${r.id}"><path d="${d}" fill="none" stroke="transparent" stroke-width="16"/><path class="tr" d="${d}" fill="none" stroke="${r.diff==='soutenue'?'var(--sun)':'var(--forest)'}" stroke-width="3" stroke-linejoin="round"/></a>`});
-      bm.innerHTML=s+'</svg><div class="maptip" hidden></div>';
-      const tip=$('.maptip',bm);
-      $$('a[data-id]',bm).forEach(a=>{const r=byId[a.dataset.id];
-        a.addEventListener('mousemove',e=>{const b=bm.getBoundingClientRect();tip.hidden=false;tip.textContent=`${r.t} · ${km(r.km)} km · ${nf(r.dp)} m D+`;
-          tip.style.left=Math.max(4,Math.min(e.clientX-b.left+12,b.width-tip.offsetWidth-8))+'px';tip.style.top=(e.clientY-b.top-36)+'px';$('.tr',a).setAttribute('stroke-width','6')});
-        a.addEventListener('mouseleave',()=>{tip.hidden=true;$('.tr',a).setAttribute('stroke-width','3')})});
-    };
-    let lmap, layers=[];
-    const leafMap=()=>{
-      if(!lmap){bm.classList.add('is-leaflet');lmap=L.map(bm,{scrollWheelZoom:false});tileLayer().addTo(lmap)}
-      layers.forEach(l=>l.remove()); layers=[];
-      const shown=inRegion().filter(r=>!current||r.diff===current);
-      shown.forEach(r=>{const l=L.polyline(r.p.map(p=>[p[0],p[1]]),{color:r.diff==='soutenue'?'#C9822B':'#1F4D2B',weight:4}).addTo(lmap)
+  /* cartes par région (page Itinéraires) */
+  const TOWNS={montpellier:[['Montpellier',43.611,3.877],['Saint-Mathieu-de-Tréviers',43.768,3.858],['Clermont-l’Hérault',43.627,3.432],['Frontignan',43.448,3.756],['Ganges',43.934,3.708]],
+    marseille:[['Marseille',43.296,5.37],['Cassis',43.214,5.538]],pyrenees:[['Bagnères-de-Luchon',42.79,0.594]],
+    lozere:[['Mende',44.518,3.5],['La Canourgue',44.431,3.215],['Florac',44.324,3.593],['Meyrueis',44.18,3.43]]};
+  $$('.region-map').forEach(bm=>{
+    const region=bm.dataset.region, rr=R.filter(r=>(r.region||'montpellier')===region);
+    if(!rr.length){bm.hidden=true;return}
+    const col=r=>r.diff==='soutenue'?'#C9822B':'#1F4D2B';
+    if(ok){
+      bm.classList.add('is-leaflet');
+      const m=L.map(bm,{scrollWheelZoom:false,dragging:!L.Browser.mobile}); tileLayer().addTo(m);
+      const ls=rr.map(r=>{const l=L.polyline(r.p.map(p=>[p[0],p[1]]),{color:col(r),weight:4}).addTo(m)
         .bindPopup(`<b>${r.t}</b><br>${km(r.km)} km · ${nf(r.dp)} m D+<br><a href="${r.page}.html">Voir la fiche →</a>`);
-        l.on('mouseover',()=>l.setStyle({weight:7})).on('mouseout',()=>l.setStyle({weight:4}));layers.push(l)});
-      const b=L.featureGroup(layers).getBounds(); if(b.isValid()) lmap.fitBounds(b,{padding:[24,24]});
-    };
-    const draw=()=>ok?leafMap():svgMap();
-    chips.forEach(c=>c.addEventListener('click',()=>{chips.forEach(x=>x.setAttribute('aria-pressed','false'));c.setAttribute('aria-pressed','true');current=c.dataset.f;draw()}));
-    rchips.forEach(c=>c.addEventListener('click',()=>{rchips.forEach(x=>x.setAttribute('aria-pressed','false'));c.setAttribute('aria-pressed','true');region=c.dataset.r;draw()}));
-    draw();
-    const note=$('#map-note'); if(note&&ok) note.textContent='Cliquez sur une trace pour ouvrir la fiche de l’itinéraire.';
-  }
+        l.on('mouseover',()=>l.setStyle({weight:7})).on('mouseout',()=>l.setStyle({weight:4})); return l});
+      m.fitBounds(L.featureGroup(ls).getBounds(),{padding:[24,24]});
+      return;
+    }
+    const W=1100,H=region==='montpellier'?620:520, all=rr.flatMap(r=>r.p), towns=TOWNS[region]||[];
+    const f=proj(all.concat(towns.map(t=>[t[1],t[2]])),W,H,48);
+    let s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Carte des itinéraires">`;
+    const c=f(towns.length?[towns[0][1],towns[0][2]]:all[0]);
+    for(let i=1;i<14;i++) s+=`<circle cx="${c[0]}" cy="${c[1]}" r="${i*48}" fill="none" stroke="var(--contour)"/>`;
+    towns.forEach((t,i)=>{const [x,y]=f([t[1],t[2]]),mm=i===0;s+=`<circle cx="${x}" cy="${y}" r="${mm?6:3.5}" fill="var(--ink)"/><text x="${x+8}" y="${y+4}" font-size="${mm?17:13}" font-weight="${mm?600:400}" fill="var(--muted)">${t[0]}</text>`});
+    rr.forEach(r=>{const d=pathD(r.p,f);s+=`<a href="${r.page}.html" data-id="${r.id}"><path d="${d}" fill="none" stroke="transparent" stroke-width="16"/><path class="tr" d="${d}" fill="none" stroke="${r.diff==='soutenue'?'var(--sun)':'var(--forest)'}" stroke-width="3" stroke-linejoin="round"/></a>`});
+    bm.innerHTML=s+'</svg><div class="maptip" hidden></div>';
+    const tip=$('.maptip',bm);
+    $$('a[data-id]',bm).forEach(a=>{const r=byId[a.dataset.id];
+      a.addEventListener('mousemove',e=>{const b=bm.getBoundingClientRect();tip.hidden=false;tip.textContent=`${r.t} · ${km(r.km)} km · ${nf(r.dp)} m D+`;
+        tip.style.left=Math.max(4,Math.min(e.clientX-b.left+12,b.width-tip.offsetWidth-8))+'px';tip.style.top=(e.clientY-b.top-36)+'px';$('.tr',a).setAttribute('stroke-width','6')});
+      a.addEventListener('mouseleave',()=>{tip.hidden=true;$('.tr',a).setAttribute('stroke-width','3')})});
+  });
 
   /* fiches : trace + profil + GPX */
   $$('.route-viz').forEach(el=>{
