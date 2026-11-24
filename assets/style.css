@@ -104,8 +104,8 @@ section.block{padding-block:46px}
 .chip{font:600 14px/1 var(--f-body);border:1px solid var(--line);background:var(--panel);color:var(--ink);padding:9px 13px;border-radius:999px;cursor:pointer}
 .chip[aria-pressed="true"]{background:var(--forest);border-color:var(--forest);color:var(--on-forest)}
 .mapbox{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;position:relative}
-.mapbox svg{display:block;width:100%;height:auto}
-.mapbox svg text{font-family:var(--f-body)}
+.mapbox:not(.is-leaflet)>svg{display:block;width:100%;height:auto}
+.mapbox:not(.is-leaflet)>svg text{font-family:var(--f-body)}
 .mapbox.is-leaflet{height:min(70vh,620px)}
 .maptip{position:absolute;pointer-events:none;background:var(--ink);color:var(--paper);font-size:13px;padding:6px 10px;border-radius:6px;white-space:nowrap;z-index:2}
 .small,.note{font-size:13px;color:var(--muted)}
@@ -269,3 +269,4 @@ textarea{min-height:150px;resize:vertical}
 .duo{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px}
 @media (max-width:760px){.duo{grid-template-columns:1fr}}
 .wide-card.photo .ph{aspect-ratio:16/10}
+.leaflet-attribution-flag{display:none!important}
