@@ -241,7 +241,7 @@ textarea{min-height:150px;resize:vertical}
 
 /* cartes par région (Itinéraires) */
 .region-map{margin:4px 0 6px}
-.region-map.is-leaflet{height:min(56vh,440px)}
+.region-map.is-leaflet{height:min(72vh,560px)}
 .map-note{margin:0 0 16px}
 .region{scroll-margin-top:90px}
 
